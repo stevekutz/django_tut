@@ -25,3 +25,40 @@
     ~~~ bash
     python manage.py startapp polls
     ~~~
+
+#### Set up first view
+- A view function, or view for short, is a Python function that takes a Web request and returns a Web response
+- <a href = "https://docs.djangoproject.com/en/3.0/topics/http/views/" > See Writing Views for more info </a>
+- The overall process flow is:
+    - Write `view` function inside the app's `views.py`
+    - Map the view to a URL using a `URLconf` 
+1) Add the following to `polls/views.py`
+    ~~~ py
+    from django.http import HttpResponse
+
+    # Create your views here.
+    def index(request):
+        return HttpResponse("Hello, world. This is the poll's index.")
+    ~~~
+2) Create a `urls.py` in the the polls app and add the following:
+    ~~~ py
+    from django.urls import path
+
+    from . import views
+
+    urlpatterns = [
+        path('', views.index, name = "index"),
+
+    ]
+    ~~~
+
+ 3) Point the root URLconf in the project to the `polls.url` module 
+ - inside `mysite/urls.py`, add the `path('polls/', include('polls.urls')),`
+    ~~~ py
+    urlpatterns = [
+        path('polls/', include('polls.urls')),
+        path('admin/', admin.site.urls),
+    ]
+    ~~~
+4) Restart the server and goto `http://127.0.0.1:8000/polls/`
+- You should see the view
