@@ -122,7 +122,31 @@ class PollsConfig(AppConfig):
     ~~~ bash
     python manage.py migrate    
     ~~~
-### The overall flow is
+#### The overall flow is
 - Create models in the app's `models.py`
 - Create migrations using `python manage.py makemigrations`
 - Run the migrations using `python manage.py migrate`
+
+#### Create a superuser and access admin panel
+1) Enter the following in the terminal
+    ~~~ bash
+    python manage.py createsuperuser
+    ~~~
+2) Modify the `polls/admin.py` file to allow admin access the poll app
+    ~~~ py
+    from .models import Question
+
+    admin.site.register(Question)
+    ~~~
+3) Set the time zone in `settings.py` to current location 
+    ~~~ py
+    TIME_ZONE = 'America/Chicago'
+    ~~~
+4) Verify the admin panel functionality by logging in
+-  `http://127.0.0.1:8000/admin`
+- selecting polls will allow access to data entered in python shell previously `python manage.py shell`
+- enter `quit()` to leave the shell
+    - from polls.models import Choice, Question
+    - from django.utils import timezone
+    - q = Question(question_text="What's new?", pub_date=timezone.now())  
+    - q.save()  
