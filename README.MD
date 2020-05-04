@@ -180,12 +180,33 @@ class PollsConfig(AppConfig):
     ]
     ~~~
 3) The `root URLconf` already points to the `polls.urls module` and does not need to be updated
-4) Update the index view
+4) Update the index view so that it uses a template
+- the `render` function is a Django shortcut function that takes in:
+    - request object
+    - template name
+    - context dictionary that passes info to the template 
+<a href = "https://docs.djangoproject.com/en/3.0/topics/http/shortcuts/#django.shortcuts.render">see Django shortcut functions</a>
+- 
     ~~~ py
-    from .models import Question
-    # Create your views here.
     def index(request):
         latest_question_list = Question.objects.order_by('pub_date')[:5]
-        output = ','.join([q.question_text for q in latest_question_list])
-        return HttpResponse(output)
+        
+        context = {'latest_question_list': latest_question_list}
+
+        return render(request, 'polls/index.html', context)
     ~~~
+#### Create a template for the index view inside the following directory structure `polls/templates/polls/index.html`
+    ~~~ html
+    {% if latest_question_list %}
+        <ul>
+        {% for question in latest_question_list %}
+            <li><a href="/polls/{{ question.id }}/">{{ question.question_text }}</a></li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>No polls are available.</p>
+    {% endif %}
+    ~~~
+
+
+
