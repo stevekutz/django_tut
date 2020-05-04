@@ -29,6 +29,8 @@
 
 #### Set up first view
 - A view function, or view for short, is a Python function that takes a Web request and returns a Web response
+- Each view is represented by a Python function (or method, in the case of class-based views)
+- A URLconf maps URL patterns to views
 - <a href = "https://docs.djangoproject.com/en/3.0/topics/http/views/" > See Writing Views for more info </a>
 - The overall process flow is:
     - Write `view` function inside the app's `views.py`
@@ -150,3 +152,40 @@ class PollsConfig(AppConfig):
     - from django.utils import timezone
     - q = Question(question_text="What's new?", pub_date=timezone.now())  
     - q.save()  
+#### Create details, results, and vote views
+- The overall process flow is:
+    - Write `view` function inside the app's `views.py`
+    - Map the app view to a URL using a `URLconf` 
+    - Update the project's `root URLconf`    
+1) Add the following to `views.py`
+    ~~~ py
+    def detail(request, question_id):
+        return HttpResponse(" You are looking at question %s. " % question_id)
+
+    def results(request, question_id):
+        response = "You are looking at the results of question %s. "
+        return HttpResponse(response % question_id)
+
+    def vote(request, question_id):
+        return HttpResponse("You are voting on question %s." % question_id)
+    ~~~  
+2) Update the `urlpatterns` variable in `/polls/utls.py`
+    ~~~ py
+    urlpatterns = [
+        path('', views.index, name = "index"),  #/polls/
+        path('<int:question_id>/', views.detail, name = 'detail'), #/polls/4/
+        path('<int:question_id>/results/', views.results, name = 'results'), #/polls/2/results/
+        path('<int:question_id>/vite/', views.vote, name = 'vote'), #/polls/3/vote/
+
+    ]
+    ~~~
+3) The `root URLconf` already points to the `polls.urls module` and does not need to be updated
+4) Update the index view
+    ~~~ py
+    from .models import Question
+    # Create your views here.
+    def index(request):
+        latest_question_list = Question.objects.order_by('pub_date')[:5]
+        output = ','.join([q.question_text for q in latest_question_list])
+        return HttpResponse(output)
+    ~~~
