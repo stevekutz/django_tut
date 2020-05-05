@@ -1,7 +1,23 @@
-<h1> {{ question.question_text }} </h1>
+<!doctype html>
+<html lang = "en">
+    <head>
+        <meta charset = "utf-8">
+        <meta name = "viewport" content = "width=device-width",
+            initial-scale=1,
+            shrink-to-fit = "no"
+        >
 
-<ul>
-    {% for choice in question.choice_set.all %}
-        <li> {{ choice.choice_text }} </li>
-    {% endfor %}
-</ul>
+        <title> Detail View </title>
+
+    </head>
+
+    <body>
+        <h1> {{ question.question_text }} </h1>
+
+        <ul>
+            {% for choice in question.choice_set.all %}
+                <li> {{ choice.choice_text }} </li>
+            {% endfor %}
+        </ul>
+    </body>
+</html>        
