@@ -207,6 +207,44 @@ class PollsConfig(AppConfig):
         <p>No polls are available.</p>
     {% endif %}
     ~~~
+#### Update the detail view to use the `get_object_or_404` shortcut
+1) Modify the `detail` view
+    ~~~ py
+    def detail(request, question_id):
+        question = get_object_or_404(Question, pk = question_id)
+        return render(request, 'polls/detail.html', {'question': question})
+    ~~~
+2) Create a template for detail
+    ~~~ html
+    <h1>> {{ question.question_text }} </h1>
+
+    <ul>
+        {% for choice in question.choice_set.all %}
+            <li> {{ choice.choice_text }} </li>
+        {% endfor %}
+    </ul>
+    ~~~
+3) Update the `index.html` template to use the `{% url %}` template tag
+~~~ html
+    {% for question in latest_question_list %}
+        <li><a href="{% url 'polls:detail' question.id %}">{{ question.question_text }}</a></li>
+    {% endfor %} 
+~~~
+4) Apply `Namespacing URLnames` to the URLconf
+- add `app_name = 'polls'` to `polls/urls.py`
+    ~~~ py
+    app_name = 'polls'
+    urlpatterns = [
+        path('', views.index, name = "index"),  #/polls/
+        path('<int:question_id>/', views.detail, name = 'detail'), #/polls/4/
+        path('<int:question_id>/results/', views.results, name = 'results'), #/polls/2/results/
+        path('<int:question_id>/vite/', views.vote, name = 'vote'), #/polls/3/vote/
+
+    ]
+    ~~~
+4) The index template of question_text info and links to the detail template that shows choice_text will now be displayed at `http://127.0.0.1:8000/polls/`     
+
+
 
 
 
