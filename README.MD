@@ -244,7 +244,28 @@ class PollsConfig(AppConfig):
     ~~~
 4) The index template of question_text info and links to the detail template that shows choice_text will now be displayed at `http://127.0.0.1:8000/polls/`     
 
+#### Create form inside `detail.html` template
+    ~~~ html
+        <body>
+            <h1> {{ question.question_text }} </h1>
 
+            {% if error_messsage %}
+                <p><strong> error_messsage</strong></p>
+            {% endif %}
+
+            <form action = "{% url 'polls:vote' question.id %}" method = "post">
+                {% csrf_token %}
+                {% for choice in question.choice_set.all %}
+                    <input type = "radio" name = "choice" id = "choice{{forloop.counter}}" value = "{{choice.id}}">
+                    <label for = "choice{{ forloop.counter}}">{{choice.choice_text}}</label>
+                    <br>
+                {% endfor %}    
+
+                <input type = "submit" value = "Vote"    
+            </form>    
+
+        </body>
+    ~~~
 
 
 
