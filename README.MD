@@ -245,6 +245,9 @@ class PollsConfig(AppConfig):
 4) The index template of question_text info and links to the detail template that shows choice_text will now be displayed at `http://127.0.0.1:8000/polls/`     
 
 #### Create form inside `detail.html` template
+- `forloop.counter` tracks the number of iterations
+- `method = "post"` uses the HTTP POST method to package and encode form data. It then sends it to the server and receives a response. ny changes to the system(e.g. database) should use the `POST method`.
+- Since `GET` requests package data into a string and then create URL, it is less secure for more sensitive form information like usernames and passwords. It should only be used for requesting data. It is more practical for websearch forms since the URLs can be bookmarked, etc.
     ~~~ html
         <body>
             <h1> {{ question.question_text }} </h1>
@@ -266,6 +269,40 @@ class PollsConfig(AppConfig):
 
         </body>
     ~~~
+#### Update the vote view
+1) Add the following imports to `views.py` 
+- import HttpResponseRedirect
+    ~~~ py
+    from django.http import HttpResponse, HttpResponseRedirect
+    ~~~
+- import `reverse`
+    ~~~ py
+    from django.urls import reverse
+    ~~~
+- import the `Choice` model
+    ~~~ py
+    from .models import Question, Choice
+    ~~~
+2) Change the `vote` function as follows:
+- `pk=request.POST['choice']` returns a string of the selected choice
+    ~~~ py
+    def vote(request, question_id):
+        question = get_object_or_404 (Question, pk=question_id)
 
-
-
+        try:
+            selected_choice = question.choice_set.get(pk=request.POST['choice'])
+        except (KeyError, Choice.DoesNotExist):
+            # redisplay question voting form
+            return render(request, 'polls/detail.html',
+                {
+                    'question': question,
+                    'error_message': "you did not make a choice",
+                }
+            )
+        else:
+            selected_choice.votes += 1
+            selected_choice.save()
+            # Return HttpResponseRedirect after a successful POST to prevent
+            # data from being posted twice if user hits Back button
+            return HttpResponseRedirect(reverse('polls:results', args=(question.id,)))
+    ~~~
