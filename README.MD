@@ -306,3 +306,40 @@ class PollsConfig(AppConfig):
             # data from being posted twice if user hits Back button
             return HttpResponseRedirect(reverse('polls:results', args=(question.id,)))
     ~~~
+#### Update the results view & add results template
+ 1) Modify the `results` view
+    ~~~ py
+    def results(request, question_id):
+        question = get_object_or_404(Question, pk=question_id)
+        context = {'question': question}
+        return render(request, 'polls/results.html', context)
+    ~~~
+ 2) Create a `/polls/result.html` template 
+    ~~~ html
+    <!doctype html>
+    <html lang = "en">
+        <head>
+            <meta charset = "utf-8">
+            <meta name = "viewport" content = "width=device-width",
+                initial-scale=1,
+                shrink-to-fit = "no"
+            >
+
+            <title> Django Tutorial </title>
+
+        </head>
+
+        <body>
+
+            <h1> {{ question.question_text }} </h1>
+            <ul>
+            {% for choice in question.choice_set.all %}
+                <li> {{ choice.choice_text }} -- {{choice.votes }}
+                    vote {{ choice.votes|pluralize }}
+                </li>
+            </ul>
+
+            <a href = "{% url 'polls:detail' question.id %}">  Vote again ? </a>
+        </body>
+    </html>
+    ~~~  
