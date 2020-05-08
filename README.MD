@@ -343,3 +343,17 @@ class PollsConfig(AppConfig):
         </body>
     </html>
     ~~~  
+    #### Implement Generic Views
+    1) Modify `polls/urls.py`
+    ~~~ py
+    from django.urls import path
+
+    from . import views
+    app_name = 'polls'
+    urlpatterns = [
+        path('', views.IndexView.as_view, name = "index"),  #/polls/
+        path('<int:pk>/', views.DetailView.as_view, name = 'detail'), #/polls/4/
+        path('<int:pk>/results/', views.ResultsView.as_view, name = 'results'), #/polls/2/results/
+        path('<int:question_id>/vite/', views.vote, name = 'vote'), #/polls/3/vote/
+    ]
+    ~~~
