@@ -343,8 +343,27 @@ class PollsConfig(AppConfig):
         </body>
     </html>
     ~~~  
-    #### Implement Generic Views
-    1) Modify `polls/urls.py`
+#### Implement Generic Views
+1) Modify `polls/urls.py`
+    #### Original
+    ~~~ py
+    from django.urls import path
+
+    from . import views
+
+    urlpatterns = [
+        # ex: /polls/
+        path('', views.index, name='index'),
+        # ex: /polls/5/
+        path('<int:question_id>/', views.detail, name='detail'),
+        # ex: /polls/5/results/
+        path('<int:question_id>/results/', views.results, name='results'),
+        # ex: /polls/5/vote/
+        path('<int:question_id>/vote/', views.vote, name='vote'),
+    ]
+    ~~~
+
+    #### Modified
     ~~~ py
     from django.urls import path
 
@@ -356,4 +375,60 @@ class PollsConfig(AppConfig):
         path('<int:pk>/results/', views.ResultsView.as_view, name = 'results'), #/polls/2/results/
         path('<int:question_id>/vite/', views.vote, name = 'vote'), #/polls/3/vote/
     ]
+    ~~~
+2)  Modify views.py
+- the `vote` view is not changed
+    #### Original
+    ~~~ py
+    from django.shortcuts import render, get_object_or_404
+    from django.http import HttpResponse, HttpResponseRedirect
+    from django.urls import reverse
+
+    from .models import Question, Choice
+    # Create your views here.
+    def index(request):
+        latest_question_list = Question.objects.order_by('-pub_date')[:5]
+        
+        context = {'latest_question_list': latest_question_list}
+
+        return render(request, 'polls/index.html', context)
+
+    def detail(request, question_id):
+        question = get_object_or_404(Question, pk = question_id)
+        return render(request, 'polls/detail.html', {'question': question})
+
+    def results(request, question_id):
+        question = get_object_or_404(Question, pk=question_id)
+        context = {'question': question}
+        return render(request, 'polls/results.html', context)
+    ...
+    ~~~
+    #### Modified
+    - Notice we imported generic
+    - `ListView` displays a list of objects
+    - `DetailView` displays a detail page for a specific type of object
+    - `pk` is expected variable name
+    ~~~ py
+    from django.shortcuts import render, get_object_or_404
+    from django.http import HttpResponse, HttpResponseRedirect
+    from django.urls import reverse
+    from django.views import generic
+
+    from .models import Question, Choice
+    # Create your views here.
+    class IndexView(generic.ListView):
+        template_name = 'polls/index.html'
+        context_object_name = 'latest_question_list'
+
+        def get_queryset(self):
+            """ Return the last five unpublished questions """
+            return Question.objects.order_by('-pub_date')[:5] 
+
+    class DetailView(generic.DetailView):
+        model = Question
+        template_name = 'polls/detail.html'
+
+    class ResultsView(generic.DetailView):
+        model = Question
+        template_name = 'polls/detail.html'
     ~~~
