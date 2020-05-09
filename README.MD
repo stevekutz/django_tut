@@ -253,7 +253,7 @@ class PollsConfig(AppConfig):
             <h1> {{ question.question_text }} </h1>
 
             {% if error_messsage %}
-                <p><strong> error_messsage</strong></p>
+                <p><strong> {{error_messsage}} </strong></p>
             {% endif %}
 
             <form action = "{% url 'polls:vote' question.id %}" method = "post">
@@ -264,7 +264,7 @@ class PollsConfig(AppConfig):
                     <br>
                 {% endfor %}    
 
-                <input type = "submit" value = "Vote"    
+                <input type = "submit" value = "Vote">    
             </form>    
 
         </body>
@@ -287,7 +287,7 @@ class PollsConfig(AppConfig):
 - `pk=request.POST['choice']` returns a string of the selected choice
     ~~~ py
     def vote(request, question_id):
-        question = get_object_or_404 (Question, pk=question_id)
+        question = get_object_or_404(Question, pk=question_id)
 
         try:
             selected_choice = question.choice_set.get(pk=request.POST['choice'])
@@ -335,8 +335,9 @@ class PollsConfig(AppConfig):
             <ul>
             {% for choice in question.choice_set.all %}
                 <li> {{ choice.choice_text }} -- {{choice.votes }}
-                    vote {{ choice.votes|pluralize }}
+                    vote{{ choice.votes|pluralize }}
                 </li>
+            {% endfor %}
             </ul>
 
             <a href = "{% url 'polls:detail' question.id %}">  Vote again ? </a>
@@ -352,14 +353,10 @@ class PollsConfig(AppConfig):
     from . import views
 
     urlpatterns = [
-        # ex: /polls/
-        path('', views.index, name='index'),
-        # ex: /polls/5/
-        path('<int:question_id>/', views.detail, name='detail'),
-        # ex: /polls/5/results/
-        path('<int:question_id>/results/', views.results, name='results'),
-        # ex: /polls/5/vote/
-        path('<int:question_id>/vote/', views.vote, name='vote'),
+        path('', views.IndexView.as_view(), name = "index"),  #/polls/
+        path('<int:pk>/', views.DetailView.as_view(), name = 'detail'), #/polls/4/
+        path('<int:pk>/results/', views.ResultsView.as_view(), name = 'results'), #/polls/2/results/
+        path('<int:question_id>/vite/', views.vote, name = 'vote'), #/polls/3/vote/
     ]
     ~~~
 
@@ -405,7 +402,7 @@ class PollsConfig(AppConfig):
     ~~~
     #### Modified
     - Notice we imported generic
-    - `ListView` displays a list of objects
+    - `ListView` - a page representing a list of objects
     - `DetailView` displays a detail page for a specific type of object
     - `pk` is expected variable name
     ~~~ py
