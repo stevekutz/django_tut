@@ -429,3 +429,53 @@ class PollsConfig(AppConfig):
         model = Question
         template_name = 'polls/detail.html'
     ~~~
+### Creating tests
+1) Add the following to `polls/test.py`
+    ~~~ py
+    import datetime
+    from django.utils import timezone
+    from .models import Question
+
+    from django.test import TestCase
+
+
+    # Create your tests here.
+    class QuestionModelTests(TestCase):
+        def test_was_published_recently_with_future_question(self):
+            """  
+            was_published_recently() returns False for questions whose pub_date is in the future
+            """
+            time = timezone.now() + datetime.timedelta(days = 30)
+            future_question = Question(pub_date=time)
+            self.assertIs(future_question.was_published_recently(), False)
+    ~~~
+2) Running `python manage.py test polls` should return the following
+- the current code incorrectly returns True
+- the testcase expects False since the pub_date is not recent
+    ~~~ bash
+    Creating test database for alias 'default'...
+    System check identified no issues (0 silenced).
+    F
+    ======================================================================
+    FAIL: test_was_published_recently_with_future_question (polls.tests.QuestionModelTests)
+    was_published_recently() returns False for questions whose pub_date is in the future
+    ----------------------------------------------------------------------
+    Traceback (most recent call last):
+    File "/Users/skutz/Documents/GitHub/django_tut/mysite/polls/tests.py", line 16, in test_was_published_recently_with_future_question
+        self.assertIs(future_question.was_published_recently(), False)
+    AssertionError: True is not False
+
+    ----------------------------------------------------------------------
+    Ran 1 test in 0.001s
+
+    FAILED (failures=1)
+    Destroying test database for alias 'default'...
+    ~~~
+3) Update 'polls/models.py'
+#### Original
+    ~~~ py
+    ...
+        def was_published_recently(self):
+            return self.pub_date >= timezone.now() - datetime.timedelta(days=1)
+    ~~~
+#### Modified    
