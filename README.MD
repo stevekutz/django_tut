@@ -616,3 +616,64 @@ The overall process flow is :
             self.assertIs(recent_question.was_published_recently(), True)
 
     ~~~
+#### Use Django Test Client
+1) Within python shell enter the following :
+
+    ~~~ bash
+    from django.test.utils import setup_test_environment
+    setup_test_environment()
+    from django.test import Client
+    client = Client()
+    from django.urls import reverse
+    ~~~
+
+2) Verify responses
+
+    ~~~ bash
+    response = client.get(reverse('polls:index'))
+    response.status_code
+    ~~~
+
+    - should respond with `200`
+
+    ~~~ bash
+    response.context['latest_question_list']
+    ~~~
+
+    - should respond with `<QuerySet [<Question: What's up?>]>`
+
+3) Exit the shell
+
+#### Updating the polls index view to filter out future dates
+
+1) Add the timezone import to `polls/views.py`
+
+    ~~~ py
+    from django.utils import timezone
+    ~~~
+
+2) Modify the `get_queryset` method so that it returns a filtered view that is `less-than-or equal-to the current time`
+   - original
+
+   ~~~ py
+   def get_queryset(self):
+       """ Return the last five unpublished questions """
+       return Question.objects.order_by('-pub_date')[:5] 
+   ~~~
+
+   - modified
+
+    ~~~ py
+    def get_queryset(self):
+    """ Return the last five unpublished questions """
+    return Question.objects.filter( pub_date__lte = timezone.now() ).order_by('-pub_date')[:5] 
+    ~~~
+
+    - notice that there are 2 underscores between `date` and `lte`
+
+3) Launch server and add a question with a future date in admin panel
+
+4) Goto the `http://127.0.0.1:8000/polls/` URL and verify that the future date question is not displayed
+
+#### Writing tests for `questions`
+
