@@ -1,0 +1,31 @@
+li a {
+    color: green;
+    text-decoration: none;
+}
+
+/* background-image also works  */
+/* body {
+    background: rgba(181, 181, 205, 0.5) 
+    url("images/background.gif");
+} */
+
+/* body {
+    background: url("images/background.png") no-repeat;
+} */
+
+/* using background-image DOES NOT WORK */
+/* body {  
+    background: pink url("images/background.png") no-repeat;
+} */
+
+h1 {
+    color: deeppink;
+}
+
+a {
+    text-decoration: none;
+}
+
+ul li span{
+    color: dodgerblue;
+}

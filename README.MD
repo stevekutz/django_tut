@@ -796,3 +796,50 @@ The overall process flow is :
        ~~~ bash
        TypeError: _reverse_with_prefix() argument after * must be an iterable, not int
        ~~~
+
+### Adding Basic Styling
+
+1) Create a directory structure and style sheet inside `polls/static/polls/style.css`
+
+2) Add the following to `style.css`
+
+    ~~~ css
+
+    li a {
+        color: green;
+    }
+
+    body {
+        background: blue url("images/background.png") no-repeat;
+    }
+
+    h1 {
+        color: deeppink;
+    }
+
+    a {
+        text-decoration: none;
+    }
+
+    ul li span{
+        color: dodgerblue;
+    }
+
+    ~~~
+
+3) Modify the template files to include the stylesheet
+
+    ~~~ html
+
+    {% load static %}
+    <link rel = "stylesheet" type = "text/css" href = "{% static 'polls/style.css' %}">
+
+    ~~~
+
+4) Modify the `results.html` template to show different coloring on votes
+
+~~~ html
+    <li> {{ choice.choice_text }} -- 
+        <span> {{choice.votes}} vote{{ choice.votes|pluralize }} </span>
+    </li>
+~~~
