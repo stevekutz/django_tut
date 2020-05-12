@@ -693,7 +693,7 @@ The overall process flow is :
             """
             response = self.client.get(reverse('polls:index'))
             self.assertEqual(response.status_code, 200)
-            self.assertContains(response, "No polls are available.")
+            self.assertContains(response, "No polls are available")
             self.assertQuerysetEqual(response.context['latest_question_list'], [])
 
         def test_past_question(self):
@@ -758,7 +758,7 @@ The overall process flow is :
             The detail view of a question with a pub_date in the past displays the question's text
             """
             past_question = create_question(question_text = 'Past Question. ', days =- 5)
-            url = reverse('polls: detail', args = (past_question.id))
+            url = reverse('polls:detail', args = (past_question.id,))
             response = self.client.get(url)
             self.assertContains(response, past_question.question.text)
     ~~~
@@ -769,3 +769,30 @@ The overall process flow is :
     return Question.objects.filter(pub_date__lte = timezone.now())
     ~~~
 
+4) Experiment with tests to see what type of errors results from typos
+
+   - For example, in the QuestionDetailViewTests(TestCase) `test_past_question`, the original code is
+
+     ~~~ py
+     url = reverse('polls:detail', args = (past_question.id,))
+     ~~~
+
+       - Introduce ERROR and look for clues in error message
+
+       ~~~ py
+       url = reverse('polls: detail', args = (past_question.id,))
+       ~~~
+
+       ~~~ bash
+       django.urls.exceptions.NoReverseMatch: Reverse for ' detail' not found. ' detail' is not a valid view function or pattern name.
+       ~~~
+
+       - Another ERROR experiment
+
+       ~~~ py
+       url = reverse('polls:detail', args = (past_question.id))
+       ~~~
+
+       ~~~ bash
+       TypeError: _reverse_with_prefix() argument after * must be an iterable, not int
+       ~~~

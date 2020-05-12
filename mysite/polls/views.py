@@ -22,7 +22,7 @@ class DetailView(generic.DetailView):
         """
         Exclude any question that has not been published yet
         """
-        return Question.objects.filter(pub_daste__lte = timezone.now())
+        return Question.objects.filter(pub_date__lte = timezone.now())
 
 class ResultsView(generic.DetailView):
     model = Question
