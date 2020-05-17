@@ -846,7 +846,21 @@ The overall process flow is :
 
 #### Customize Admin Panel
 
+- create `admin model classes`
+
+    - ChoiceInline
+
+    - QuestionAdmin
+
+- the The admin interface has the ability to edit models on the same page as a parent model. These are called inlines. The `ChoiceInline` directs Django to allow `Choice` objects to be editable on the `admin`  page. The `extra = 3` provides 3 extra `Choice Text` fields
+
 - the `TabularInline` displays all fields for `Choice` objects
+
+- `list_display` is an `admin option` that provides a `tuple` of field names
+
+- `list_filter` is an `admin option` that creates a right sidebar filter
+
+- `search_fields` is an `admin option` that creates a search text box
 
 1. Use `fieldsets` to separate info in `admin.py`
 
