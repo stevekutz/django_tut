@@ -844,7 +844,7 @@ The overall process flow is :
     </li>
 ~~~
 
-#### Customize Admin Panel
+### Customize Admin Panel
 
 - create `admin model classes`
 
@@ -862,7 +862,7 @@ The overall process flow is :
 
 - `search_fields` is an `admin option` that creates a search text box
 
-1. Use `fieldsets` to separate info in `admin.py`
+- Use `fieldsets` to separate info in `admin.py`
 
     ~~~ py
     from django.contrib import admin
@@ -883,6 +883,56 @@ The overall process flow is :
         inlines = [ChoiceInline]
 
         list_display = ('question_text', 'pub_date', 'was_published_recently')
+        list_filter = ['pub_date']
+        search_fields = ['question_text']
 
     admin.site.register(Question, QuestionAdmin)  
+    ~~~
+
+#### Create a `project template`
+
+1) Add a `DIRS` option inside of `manage.py`. `DIRS` is essentially a search path for Django to check when loading templates
+
+   - before
+
+   ~~~ py
+       'BACKEND': 'django.template.backends.django.DjangoTemplates',
+       'DIRS': [],
+       'APP_DIRS': True,
+   ~~~
+
+   - after
+
+    ~~~ py
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'APP_DIRS': True,
+    ~~~
+
+2) Create the following directory structure in `templates/admin` 
+
+3) Locate the Django Source files(should be within local environment folder) using
+
+    ~~~ bash
+    python -c "import django; print(django.__path__)"
+    ~~~
+
+4) Locate `base_site.html` within the local environment folder `/lib/python3.8/site-packages/django/contrib/admin/templates/admin` and copy into the project `templates/admin` folder
+
+5) Modify `base_site/html`
+
+    - before
+
+    ~~~ py
+    {% block branding %}
+    <h1 id="site-name"><a href="{% url 'admin:index' %}">{{ site_header|default:_('Django administration') }}</a></h1>
+    {% endblock %}
+    ~~~
+
+    - after
+
+    ~~~ py
+    {% block branding %}
+    <h1 id="site-name"><a href="{% url 'admin:index' %}"> Polls Administration</a></h1>
+    {% endblock %}
     ~~~
